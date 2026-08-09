@@ -7,5 +7,5 @@ export const infrastructureService = {
   get: (id: string) => mockRequest<InfrastructureAsset | undefined>(assets.find((a) => a.id === id)),
   categories: () => mockRequest(assetTypeSummary),
   totals: () => mockRequest(portfolioTotals),
-  inspections: (_id: string) => mockRequest<InspectionRecord[]>(inspectionHistory.default),
+  inspections: (_id: string) => mockRequest<InspectionRecord[]>(inspectionHistory["default"] ?? []),
 };
