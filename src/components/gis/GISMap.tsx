@@ -18,7 +18,7 @@ export default function GISMap({
   onSelect,
 }: {
   assets: InfrastructureAsset[];
-  selectedId?: string;
+  selectedId?: string | undefined;
   onSelect?: (asset: InfrastructureAsset) => void;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);

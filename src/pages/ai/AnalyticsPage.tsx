@@ -64,7 +64,7 @@ export function AnalyticsPage() {
               <Label htmlFor={`filter-${f.id}`} className="text-xs text-muted-foreground">
                 {f.label}
               </Label>
-              <Select defaultValue={f.options[0]}>
+              <Select defaultValue={f.options[0]!}>
                 <SelectTrigger id={`filter-${f.id}`} className="w-full">
                   <SelectValue />
                 </SelectTrigger>
