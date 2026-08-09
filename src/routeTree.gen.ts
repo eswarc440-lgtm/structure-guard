@@ -10,33 +10,323 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DigitalTwinRouteImport } from './routes/digital-twin'
+import { Route as GisRouteImport } from './routes/gis'
+import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as AiIndexRouteImport } from './routes/ai.index'
+import { Route as AiAnalyticsRouteImport } from './routes/ai.analytics'
+import { Route as AiModelPerformanceRouteImport } from './routes/ai.model-performance'
+import { Route as AiPredictionsRouteImport } from './routes/ai.predictions'
+import { Route as AiRiskAnalysisRouteImport } from './routes/ai.risk-analysis'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth.forgot-password'
+import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as AuthRegisterRouteImport } from './routes/auth.register'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth.reset-password'
+import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
+import { Route as AuthVerifyPhoneRouteImport } from './routes/auth.verify-phone'
+import { Route as InfrastructureIndexRouteImport } from './routes/infrastructure.index'
+import { Route as ReportsIndexRouteImport } from './routes/reports.index'
+import { Route as ReportsIdRouteImport } from './routes/reports.$id'
+import { Route as InfrastructureIdIndexRouteImport } from './routes/infrastructure.$id.index'
+import { Route as InfrastructureIdHistoryRouteImport } from './routes/infrastructure.$id.history'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DigitalTwinRoute = DigitalTwinRouteImport.update({
+  id: '/digital-twin',
+  path: '/digital-twin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GisRoute = GisRouteImport.update({
+  id: '/gis',
+  path: '/gis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiIndexRoute = AiIndexRouteImport.update({
+  id: '/ai/',
+  path: '/ai/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAnalyticsRoute = AiAnalyticsRouteImport.update({
+  id: '/ai/analytics',
+  path: '/ai/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiModelPerformanceRoute = AiModelPerformanceRouteImport.update({
+  id: '/ai/model-performance',
+  path: '/ai/model-performance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiPredictionsRoute = AiPredictionsRouteImport.update({
+  id: '/ai/predictions',
+  path: '/ai/predictions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiRiskAnalysisRoute = AiRiskAnalysisRouteImport.update({
+  id: '/ai/risk-analysis',
+  path: '/ai/risk-analysis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/auth/forgot-password',
+  path: '/auth/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
+  id: '/auth/verify-email',
+  path: '/auth/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthVerifyPhoneRoute = AuthVerifyPhoneRouteImport.update({
+  id: '/auth/verify-phone',
+  path: '/auth/verify-phone',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InfrastructureIndexRoute = InfrastructureIndexRouteImport.update({
+  id: '/infrastructure/',
+  path: '/infrastructure/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsIndexRoute = ReportsIndexRouteImport.update({
+  id: '/reports/',
+  path: '/reports/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsIdRoute = ReportsIdRouteImport.update({
+  id: '/reports/$id',
+  path: '/reports/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InfrastructureIdIndexRoute = InfrastructureIdIndexRouteImport.update({
+  id: '/infrastructure/$id/',
+  path: '/infrastructure/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InfrastructureIdHistoryRoute = InfrastructureIdHistoryRouteImport.update({
+  id: '/infrastructure/$id/history',
+  path: '/infrastructure/$id/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/digital-twin': typeof DigitalTwinRoute
+  '/gis': typeof GisRoute
+  '/notifications': typeof NotificationsRoute
+  '/profile': typeof ProfileRoute
+  '/settings': typeof SettingsRoute
+  '/ai/analytics': typeof AiAnalyticsRoute
+  '/ai/model-performance': typeof AiModelPerformanceRoute
+  '/ai/predictions': typeof AiPredictionsRoute
+  '/ai/risk-analysis': typeof AiRiskAnalysisRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
+  '/auth/verify-phone': typeof AuthVerifyPhoneRoute
+  '/reports/$id': typeof ReportsIdRoute
+  '/ai/': typeof AiIndexRoute
+  '/infrastructure/': typeof InfrastructureIndexRoute
+  '/reports/': typeof ReportsIndexRoute
+  '/infrastructure/$id/history': typeof InfrastructureIdHistoryRoute
+  '/infrastructure/$id/': typeof InfrastructureIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/digital-twin': typeof DigitalTwinRoute
+  '/gis': typeof GisRoute
+  '/notifications': typeof NotificationsRoute
+  '/profile': typeof ProfileRoute
+  '/settings': typeof SettingsRoute
+  '/ai/analytics': typeof AiAnalyticsRoute
+  '/ai/model-performance': typeof AiModelPerformanceRoute
+  '/ai/predictions': typeof AiPredictionsRoute
+  '/ai/risk-analysis': typeof AiRiskAnalysisRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
+  '/auth/verify-phone': typeof AuthVerifyPhoneRoute
+  '/reports/$id': typeof ReportsIdRoute
+  '/ai': typeof AiIndexRoute
+  '/infrastructure': typeof InfrastructureIndexRoute
+  '/reports': typeof ReportsIndexRoute
+  '/infrastructure/$id/history': typeof InfrastructureIdHistoryRoute
+  '/infrastructure/$id': typeof InfrastructureIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/digital-twin': typeof DigitalTwinRoute
+  '/gis': typeof GisRoute
+  '/notifications': typeof NotificationsRoute
+  '/profile': typeof ProfileRoute
+  '/settings': typeof SettingsRoute
+  '/ai/analytics': typeof AiAnalyticsRoute
+  '/ai/model-performance': typeof AiModelPerformanceRoute
+  '/ai/predictions': typeof AiPredictionsRoute
+  '/ai/risk-analysis': typeof AiRiskAnalysisRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify-email': typeof AuthVerifyEmailRoute
+  '/auth/verify-phone': typeof AuthVerifyPhoneRoute
+  '/reports/$id': typeof ReportsIdRoute
+  '/ai/': typeof AiIndexRoute
+  '/infrastructure/': typeof InfrastructureIndexRoute
+  '/reports/': typeof ReportsIndexRoute
+  '/infrastructure/$id/history': typeof InfrastructureIdHistoryRoute
+  '/infrastructure/$id/': typeof InfrastructureIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/digital-twin'
+    | '/gis'
+    | '/notifications'
+    | '/profile'
+    | '/settings'
+    | '/ai/analytics'
+    | '/ai/model-performance'
+    | '/ai/predictions'
+    | '/ai/risk-analysis'
+    | '/auth/forgot-password'
+    | '/auth/login'
+    | '/auth/register'
+    | '/auth/reset-password'
+    | '/auth/verify-email'
+    | '/auth/verify-phone'
+    | '/reports/$id'
+    | '/ai/'
+    | '/infrastructure/'
+    | '/reports/'
+    | '/infrastructure/$id/history'
+    | '/infrastructure/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/digital-twin'
+    | '/gis'
+    | '/notifications'
+    | '/profile'
+    | '/settings'
+    | '/ai/analytics'
+    | '/ai/model-performance'
+    | '/ai/predictions'
+    | '/ai/risk-analysis'
+    | '/auth/forgot-password'
+    | '/auth/login'
+    | '/auth/register'
+    | '/auth/reset-password'
+    | '/auth/verify-email'
+    | '/auth/verify-phone'
+    | '/reports/$id'
+    | '/ai'
+    | '/infrastructure'
+    | '/reports'
+    | '/infrastructure/$id/history'
+    | '/infrastructure/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/digital-twin'
+    | '/gis'
+    | '/notifications'
+    | '/profile'
+    | '/settings'
+    | '/ai/analytics'
+    | '/ai/model-performance'
+    | '/ai/predictions'
+    | '/ai/risk-analysis'
+    | '/auth/forgot-password'
+    | '/auth/login'
+    | '/auth/register'
+    | '/auth/reset-password'
+    | '/auth/verify-email'
+    | '/auth/verify-phone'
+    | '/reports/$id'
+    | '/ai/'
+    | '/infrastructure/'
+    | '/reports/'
+    | '/infrastructure/$id/history'
+    | '/infrastructure/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
+  DigitalTwinRoute: typeof DigitalTwinRoute
+  GisRoute: typeof GisRoute
+  NotificationsRoute: typeof NotificationsRoute
+  ProfileRoute: typeof ProfileRoute
+  SettingsRoute: typeof SettingsRoute
+  AiAnalyticsRoute: typeof AiAnalyticsRoute
+  AiModelPerformanceRoute: typeof AiModelPerformanceRoute
+  AiPredictionsRoute: typeof AiPredictionsRoute
+  AiRiskAnalysisRoute: typeof AiRiskAnalysisRoute
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
+  AuthVerifyPhoneRoute: typeof AuthVerifyPhoneRoute
+  ReportsIdRoute: typeof ReportsIdRoute
+  AiIndexRoute: typeof AiIndexRoute
+  InfrastructureIndexRoute: typeof InfrastructureIndexRoute
+  ReportsIndexRoute: typeof ReportsIndexRoute
+  InfrastructureIdHistoryRoute: typeof InfrastructureIdHistoryRoute
+  InfrastructureIdIndexRoute: typeof InfrastructureIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +338,188 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/digital-twin': {
+      id: '/digital-twin'
+      path: '/digital-twin'
+      fullPath: '/digital-twin'
+      preLoaderRoute: typeof DigitalTwinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gis': {
+      id: '/gis'
+      path: '/gis'
+      fullPath: '/gis'
+      preLoaderRoute: typeof GisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/': {
+      id: '/ai/'
+      path: '/ai'
+      fullPath: '/ai/'
+      preLoaderRoute: typeof AiIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/analytics': {
+      id: '/ai/analytics'
+      path: '/ai/analytics'
+      fullPath: '/ai/analytics'
+      preLoaderRoute: typeof AiAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/model-performance': {
+      id: '/ai/model-performance'
+      path: '/ai/model-performance'
+      fullPath: '/ai/model-performance'
+      preLoaderRoute: typeof AiModelPerformanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/predictions': {
+      id: '/ai/predictions'
+      path: '/ai/predictions'
+      fullPath: '/ai/predictions'
+      preLoaderRoute: typeof AiPredictionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai/risk-analysis': {
+      id: '/ai/risk-analysis'
+      path: '/ai/risk-analysis'
+      fullPath: '/ai/risk-analysis'
+      preLoaderRoute: typeof AiRiskAnalysisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/auth/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/verify-email': {
+      id: '/auth/verify-email'
+      path: '/auth/verify-email'
+      fullPath: '/auth/verify-email'
+      preLoaderRoute: typeof AuthVerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/verify-phone': {
+      id: '/auth/verify-phone'
+      path: '/auth/verify-phone'
+      fullPath: '/auth/verify-phone'
+      preLoaderRoute: typeof AuthVerifyPhoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/infrastructure/': {
+      id: '/infrastructure/'
+      path: '/infrastructure'
+      fullPath: '/infrastructure/'
+      preLoaderRoute: typeof InfrastructureIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports/': {
+      id: '/reports/'
+      path: '/reports'
+      fullPath: '/reports/'
+      preLoaderRoute: typeof ReportsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports/$id': {
+      id: '/reports/$id'
+      path: '/reports/$id'
+      fullPath: '/reports/$id'
+      preLoaderRoute: typeof ReportsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/infrastructure/$id/': {
+      id: '/infrastructure/$id/'
+      path: '/infrastructure/$id'
+      fullPath: '/infrastructure/$id/'
+      preLoaderRoute: typeof InfrastructureIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/infrastructure/$id/history': {
+      id: '/infrastructure/$id/history'
+      path: '/infrastructure/$id/history'
+      fullPath: '/infrastructure/$id/history'
+      preLoaderRoute: typeof InfrastructureIdHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
+  DigitalTwinRoute: DigitalTwinRoute,
+  GisRoute: GisRoute,
+  NotificationsRoute: NotificationsRoute,
+  ProfileRoute: ProfileRoute,
+  SettingsRoute: SettingsRoute,
+  AiAnalyticsRoute: AiAnalyticsRoute,
+  AiModelPerformanceRoute: AiModelPerformanceRoute,
+  AiPredictionsRoute: AiPredictionsRoute,
+  AiRiskAnalysisRoute: AiRiskAnalysisRoute,
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthVerifyEmailRoute: AuthVerifyEmailRoute,
+  AuthVerifyPhoneRoute: AuthVerifyPhoneRoute,
+  ReportsIdRoute: ReportsIdRoute,
+  AiIndexRoute: AiIndexRoute,
+  InfrastructureIndexRoute: InfrastructureIndexRoute,
+  ReportsIndexRoute: ReportsIndexRoute,
+  InfrastructureIdHistoryRoute: InfrastructureIdHistoryRoute,
+  InfrastructureIdIndexRoute: InfrastructureIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

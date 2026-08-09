@@ -1,24 +1,48 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PublicNav } from "@/components/navigation/PublicNav";
+import { SiteFooter } from "@/components/navigation/SiteFooter";
+import { Hero } from "@/components/landing/Hero";
+import { PlatformIntro } from "@/components/landing/PlatformIntro";
+import { AISection } from "@/components/landing/AISection";
+import { DigitalTwinSection, GISSection } from "@/components/landing/DigitalTwinSection";
+import { Capabilities, HowItWorks, ImpactSection, MonitoringSection } from "@/components/landing/Sections";
+import { FinalCTA } from "@/components/landing/FinalCTA";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+const title = "SIMRAS — Structural Infrastructure Monitoring & Risk Intelligence";
+const description =
+  "SIMRAS combines AI risk prediction, GIS and digital twin technology to monitor structural infrastructure and support data-driven decisions.";
+
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: LandingPage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function LandingPage() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background">
+      <PublicNav />
+      <main>
+        <Hero />
+        <PlatformIntro />
+        <AISection />
+        <DigitalTwinSection />
+        <GISSection />
+        <HowItWorks />
+        <Capabilities />
+        <MonitoringSection />
+        <ImpactSection />
+        <FinalCTA />
+      </main>
+      <SiteFooter />
     </div>
   );
 }
