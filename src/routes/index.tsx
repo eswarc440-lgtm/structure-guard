@@ -7,6 +7,7 @@ import { AISection } from "@/components/landing/AISection";
 import { DigitalTwinSection, GISSection } from "@/components/landing/DigitalTwinSection";
 import { Capabilities, HowItWorks, ImpactSection, MonitoringSection } from "@/components/landing/Sections";
 import { FinalCTA } from "@/components/landing/FinalCTA";
+import heroVideo from "@/assets/videos/hero-bg.mp4.asset.json";
 
 const title = "SIMRAS — Structural Infrastructure Monitoring & Risk Intelligence";
 const description =
