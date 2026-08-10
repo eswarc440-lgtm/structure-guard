@@ -41,12 +41,12 @@ export function Hero({ videoSrc }: { videoSrc?: string }) {
             className="size-full object-cover"
           />
         )}
-        <div className="absolute inset-0 bg-navy/72" aria-hidden="true" />
+        <div className="absolute inset-0 bg-navy/25" aria-hidden="true" />
         <div
-          className="absolute inset-0 bg-gradient-to-t from-navy via-navy/40 to-navy/70"
+          className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/20 to-navy/40"
           aria-hidden="true"
         />
-        <div className="grid-lines absolute inset-0 opacity-[0.06]" aria-hidden="true" />
+        <div className="grid-lines absolute inset-0 opacity-[0.04]" aria-hidden="true" />
       </div>
 
       <div className="relative mx-auto w-full max-w-7xl px-4 pt-28 pb-24 sm:px-6 lg:px-8">
