@@ -18,7 +18,7 @@ export function Hero({ videoSrc }: { videoSrc?: string }) {
   });
 
   return (
-    <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-navy">
+    <section className="relative flex h-svh items-center overflow-hidden bg-navy">
       <div className="absolute inset-0">
         {videoSrc ? (
           <video
