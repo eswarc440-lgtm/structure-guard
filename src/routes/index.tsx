@@ -32,7 +32,7 @@ function LandingPage() {
     <div className="min-h-screen bg-background">
       <PublicNav />
       <main>
-        <Hero />
+        <Hero videoSrc={heroVideo.url} />
         <PlatformIntro />
         <AISection />
         <DigitalTwinSection />
