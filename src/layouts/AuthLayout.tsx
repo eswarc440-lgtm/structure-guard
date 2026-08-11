@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Logo } from "@/components/common/Logo";
+import authBg from "@/assets/hero-infrastructure.jpg";
 
 export function AuthLayout({
   title,
@@ -16,8 +17,17 @@ export function AuthLayout({
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden flex-col justify-between overflow-hidden bg-navy p-10 text-navy-foreground lg:flex">
+        <img
+          src={authBg}
+          alt="Cable-stayed bridge and city skyline at dusk"
+          className="absolute inset-0 size-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/70 to-navy/40" aria-hidden="true" />
         <div className="grid-lines absolute inset-0 opacity-[0.07]" aria-hidden="true" />
-        <Logo tone="light" />
+        <div className="relative">
+          <Logo tone="light" />
+        </div>
+
         <div className="relative max-w-md">
           <p className="eyebrow text-accent">Monitor. Predict. Protect.</p>
           <h2 className="mt-4 font-display text-4xl leading-tight font-bold text-balance">
