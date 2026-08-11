@@ -191,7 +191,7 @@ export function HomePage() {
 
   return (
     <DashboardLayout bare>
-      <main className="relative min-h-[calc(100svh-4rem)] w-full overflow-hidden">
+      <main className="relative flex min-h-[calc(100svh-4rem)] w-full items-center overflow-hidden">
         {/* Layer 1 — texture + gradient */}
         <div
           className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_-10%,var(--color-primary)/8,transparent_60%)]"
@@ -209,7 +209,7 @@ export function HomePage() {
         />
 
         {/* Layer 4/5 — content */}
-        <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 py-16 text-center sm:px-6 lg:py-24">
+        <div className="relative mx-auto flex w-full max-w-6xl flex-col justify-center items-center px-4 py-16 text-center sm:px-6 lg:py-24">
           <motion.p {...fade(0.05)} className="eyebrow text-primary">
             Welcome to SIMRAS
           </motion.p>
