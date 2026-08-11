@@ -19,7 +19,7 @@ export function LoginPage() {
     e.preventDefault();
     setLoading(true);
     await login(email);
-    navigate({ to: "/dashboard" });
+    navigate({ to: "/home" });
   }
 
   return (
