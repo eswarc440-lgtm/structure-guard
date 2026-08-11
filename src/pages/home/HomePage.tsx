@@ -70,7 +70,7 @@ const floaters: Floater[] = [
   {
     src: damSpillway.url,
     alt: "Dam spillway releasing water",
-    className: "hidden lg:block left-[10%] bottom-[6%] w-56",
+    className: "hidden lg:block left-[8%] bottom-[14%] w-48",
     rotate: 4,
     opacity: 0.55,
     blur: true,
@@ -81,7 +81,7 @@ const floaters: Floater[] = [
   {
     src: damMist.url,
     alt: "Reservoir dam at dawn",
-    className: "hidden lg:block right-[11%] bottom-[8%] w-52",
+    className: "hidden lg:block right-[9%] bottom-[15%] w-44",
     rotate: -3,
     opacity: 0.5,
     blur: true,
@@ -92,7 +92,7 @@ const floaters: Floater[] = [
   {
     src: roadGhat.url,
     alt: "Aerial view of a winding ghat road",
-    className: "hidden xl:block left-[26%] bottom-[2%] w-36",
+    className: "hidden xl:block left-[24%] bottom-[6%] w-32",
     rotate: -8,
     opacity: 0.45,
     blur: true,
@@ -260,7 +260,7 @@ export function HomePage() {
                     decoding="async"
                     className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" aria-hidden="true" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card/45 to-transparent" aria-hidden="true" />
                 </div>
 
                 <span className="mt-6">
