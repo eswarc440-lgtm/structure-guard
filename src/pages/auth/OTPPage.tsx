@@ -29,7 +29,7 @@ export function OTPPage({ channel }: { channel: "email" | "phone" }) {
       return;
     }
     await authService.login("");
-    navigate({ to: "/dashboard" });
+    navigate({ to: "/home" });
   }
 
   const target = channel === "email" ? "r.prasad@infra.gov.in" : "+91 98490 00000";

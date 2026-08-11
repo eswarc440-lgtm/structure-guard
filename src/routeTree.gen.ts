@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DigitalTwinRouteImport } from './routes/digital-twin'
 import { Route as GisRouteImport } from './routes/gis'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -51,6 +52,11 @@ const DigitalTwinRoute = DigitalTwinRouteImport.update({
 const GisRoute = GisRouteImport.update({
   id: '/gis',
   path: '/gis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotificationsRoute = NotificationsRouteImport.update({
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/digital-twin': typeof DigitalTwinRoute
   '/gis': typeof GisRoute
+  '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/digital-twin': typeof DigitalTwinRoute
   '/gis': typeof GisRoute
+  '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/digital-twin': typeof DigitalTwinRoute
   '/gis': typeof GisRoute
+  '/home': typeof HomeRoute
   '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/digital-twin'
     | '/gis'
+    | '/home'
     | '/notifications'
     | '/profile'
     | '/settings'
@@ -257,6 +267,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/digital-twin'
     | '/gis'
+    | '/home'
     | '/notifications'
     | '/profile'
     | '/settings'
@@ -282,6 +293,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/digital-twin'
     | '/gis'
+    | '/home'
     | '/notifications'
     | '/profile'
     | '/settings'
@@ -308,6 +320,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   DigitalTwinRoute: typeof DigitalTwinRoute
   GisRoute: typeof GisRoute
+  HomeRoute: typeof HomeRoute
   NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRoute
   SettingsRoute: typeof SettingsRoute
@@ -357,6 +370,13 @@ declare module '@tanstack/react-router' {
       path: '/gis'
       fullPath: '/gis'
       preLoaderRoute: typeof GisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notifications': {
@@ -500,6 +520,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   DigitalTwinRoute: DigitalTwinRoute,
   GisRoute: GisRoute,
+  HomeRoute: HomeRoute,
   NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRoute,
   SettingsRoute: SettingsRoute,
@@ -523,13 +544,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
