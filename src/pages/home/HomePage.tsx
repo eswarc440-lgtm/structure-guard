@@ -37,7 +37,7 @@ export function HomePage() {
 
   return (
     <DashboardLayout bare>
-      <main className="relative flex min-h-[calc(100svh-4rem)] w-full items-center overflow-hidden bg-foreground">
+      <main className="relative flex h-[calc(100svh-4rem)] w-full items-center overflow-hidden bg-foreground">
         {/* Slideshow */}
         <div className="absolute inset-0" aria-hidden="true">
           <AnimatePresence initial={false}>
@@ -52,8 +52,7 @@ export function HomePage() {
               className="absolute inset-0 size-full object-cover"
             />
           </AnimatePresence>
-          <div className="absolute inset-0 bg-[hsl(220_45%_10%/0.68)]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/55" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/10 to-black/55" />
         </div>
 
         {/* Content */}
