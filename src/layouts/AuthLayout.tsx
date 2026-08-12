@@ -22,8 +22,7 @@ export function AuthLayout({
           alt="Cable-stayed bridge and city skyline at dusk"
           className="absolute inset-0 size-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/70 to-navy/40" aria-hidden="true" />
-        <div className="grid-lines absolute inset-0 opacity-[0.07]" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/35 to-navy/15" aria-hidden="true" />
         <div className="relative">
           <Logo tone="light" />
         </div>
