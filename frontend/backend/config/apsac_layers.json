@@ -1,0 +1,116 @@
+{
+  "source": "APSAC_APSSDI",
+  "base_url": "https://apsac.ap.gov.in/geoserver",
+  "layers": {
+    "transport": [
+      {
+        "name": "Andhra-RoadNetwork",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-RoadNetwork/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-NationalHighway",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-NationalHighway/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-StateHighway",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-StateHighway/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-RailwayNetwork",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-RailwayNetwork/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-RailwayStationLocations",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-RailwayStationLocations/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-Airports",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-Airports/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-Seaports",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-Seaports/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-BusStations",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-BusStations/wms?service=WMS"
+      }
+    ],
+    "water": [
+      {
+        "name": "Andhra-Reservoirs",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-Reservoirs/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-Tank",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-Tank/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-River",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-River/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-InlandWaterways",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-InlandWaterways/wms?service=WMS"
+      }
+    ],
+    "public_services": [
+      {
+        "name": "Andhra-SchoolLocations",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-SchoolLocations/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-GovernmentGeneralHospital",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-GovernmentGeneralHospital/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-PrimaryHealthCenters",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-PrimaryHealthCenters/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-PoliceStations",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-PoliceStations/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-CycloneShelters",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-CycloneShelters/wms?service=WMS"
+      }
+    ],
+    "environment": [
+      {
+        "name": "Andhra-AutomaticRainGauges",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-AutomaticRainGauges/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-AutomaticWeatherStations",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-AutomaticWeatherStations/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-RiverWaterLevelRecorders",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-RiverWaterLevelRecorders/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-SoilMoistureSensors",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-SoilMoistureSensors/wms?service=WMS"
+      }
+    ],
+    "boundaries": [
+      {
+        "name": "Andhra-StateBnd",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-StateBnd/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-DistrictBnd",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-DistrictBnd/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-MandalBnd",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-MandalBnd/wms?service=WMS"
+      },
+      {
+        "name": "Andhra-VillageBnd",
+        "url": "https://apsac.ap.gov.in/geoserver/Andhra-VillageBnd/wms?service=WMS"
+      }
+    ]
+  }
+}

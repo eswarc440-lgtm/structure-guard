@@ -1,0 +1,185 @@
+{
+  "total": 24,
+  "passed": 17,
+  "failed": 7,
+  "pass_rate": "70.8%",
+  "results": [
+    {
+      "test": "1. GET /health",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:32.148941"
+    },
+    {
+      "test": "2. GET /api/v1/infrastructure",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:32.633712"
+    },
+    {
+      "test": "3. GET /api/v1/infrastructure/high-risk",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:32.708733"
+    },
+    {
+      "test": "4. GET /api/v1/infrastructure/summary",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:32.855607"
+    },
+    {
+      "test": "5. GET /api/v1/infrastructure/geojson",
+      "status": "FAIL",
+      "details": "HTTPConnectionPool(host='127.0.0.1', port=8000): Read timed out. (read timeout=10)",
+      "response_code": null,
+      "timestamp": "2026-08-14T17:43:42.865211"
+    },
+    {
+      "test": "6. GET /api/v1/infrastructure/bounds",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:52.258545"
+    },
+    {
+      "test": "7. GET /api/v1/infrastructure/nearby (17\u00b0N, 79\u00b0E, 50km)",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:53.460003"
+    },
+    {
+      "test": "8. GET /api/v1/infrastructure/district/Hyderabad",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:53.565546"
+    },
+    {
+      "test": "9. GET /api/v1/infrastructure/{asset_id} (valid)",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:53.592788"
+    },
+    {
+      "test": "10. GET /api/v1/infrastructure/{invalid_id}",
+      "status": "PASS",
+      "details": "Status 404",
+      "response_code": 404,
+      "timestamp": "2026-08-14T17:43:53.619611"
+    },
+    {
+      "test": "11. GET /api/v1/major-infrastructure?limit=50",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:53.726971"
+    },
+    {
+      "test": "12. GET /api/v1/major-infrastructure?asset_type=Bridge",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:53.871690"
+    },
+    {
+      "test": "13. GET /api/v1/major-infrastructure?risk_level=High",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:54.031965"
+    },
+    {
+      "test": "14. GET /api/v1/major-infrastructure/summary",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:54.133930"
+    },
+    {
+      "test": "15. GET /api/v1/major-infrastructure/districts",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:54.231346"
+    },
+    {
+      "test": "16. GET /analytics/summary",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:54.720413"
+    },
+    {
+      "test": "17. GET /analytics/high-risk",
+      "status": "PASS",
+      "details": "Status 200",
+      "response_code": 200,
+      "timestamp": "2026-08-14T17:43:54.816938"
+    },
+    {
+      "test": "18. GET /analytics/map-assets",
+      "status": "FAIL",
+      "details": "HTTPConnectionPool(host='127.0.0.1', port=8000): Read timed out. (read timeout=10)",
+      "response_code": null,
+      "timestamp": "2026-08-14T17:44:04.828714"
+    },
+    {
+      "test": "19. GET /api/v1/predictions/{asset_id} (valid)",
+      "status": "FAIL",
+      "details": "Expected 200, got 404",
+      "response_code": 404,
+      "timestamp": "2026-08-14T17:44:04.996390"
+    },
+    {
+      "test": "20. GET /api/v1/predictions/{invalid_id}",
+      "status": "PASS",
+      "details": "Status 404",
+      "response_code": 404,
+      "timestamp": "2026-08-14T17:44:05.009358"
+    },
+    {
+      "test": "21. POST /api/v1/predictions/batch",
+      "status": "FAIL",
+      "details": "Expected 200, got 404",
+      "response_code": 404,
+      "timestamp": "2026-08-14T17:44:05.026534"
+    },
+    {
+      "test": "22. GET /api/v1/predictions/weather/{asset_id}",
+      "status": "FAIL",
+      "details": "Expected 200, got 502",
+      "response_code": 502,
+      "timestamp": "2026-08-14T17:44:06.618237"
+    },
+    {
+      "test": "23. GET /api/digital-twin/assets?limit=50",
+      "status": "FAIL",
+      "details": "Expected 200, got 404",
+      "response_code": 404,
+      "timestamp": "2026-08-14T17:44:06.630981"
+    },
+    {
+      "test": "24. GET /api/digital-twin/asset/{asset_id}",
+      "status": "FAIL",
+      "details": "Expected 200, got 404",
+      "response_code": 404,
+      "timestamp": "2026-08-14T17:44:06.644621"
+    }
+  ],
+  "failed_tests": [
+    "5. GET /api/v1/infrastructure/geojson",
+    "18. GET /analytics/map-assets",
+    "19. GET /api/v1/predictions/{asset_id} (valid)",
+    "21. POST /api/v1/predictions/batch",
+    "22. GET /api/v1/predictions/weather/{asset_id}",
+    "23. GET /api/digital-twin/assets?limit=50",
+    "24. GET /api/digital-twin/asset/{asset_id}"
+  ]
+}

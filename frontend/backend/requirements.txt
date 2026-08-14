@@ -1,0 +1,38 @@
+# FastAPI and Web Framework
+fastapi==0.141.1
+uvicorn==0.52.1
+starlette==1.4.1
+
+# Data Validation
+pydantic==2.13.4
+pydantic-settings==2.14.2
+pydantic_core==2.46.4
+annotated-types==0.8.0
+
+# Database
+SQLAlchemy==2.0.51
+psycopg2-binary==2.9.12
+GeoAlchemy2==0.20.0
+
+# Data Processing
+pandas==3.0.5
+geopandas==1.1.4
+
+# Machine Learning
+scikit-learn==1.9.0
+joblib==1.5.3
+
+# HTTP Client
+httpx==0.28.1
+
+# Environment Configuration
+python-dotenv==1.0.0
+
+# Async Support
+anyio==4.14.2
+greenlet==3.5.5
+
+# Utilities
+click==8.4.2
+colorama==0.4.6
+packaging==26.3

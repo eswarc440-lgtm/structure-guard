@@ -1,0 +1,74 @@
+services:
+  postgis:
+    image: postgis/postgis:17-3.5
+    container_name: structure-guard-postgis
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-structure_guard}
+      POSTGRES_USER: ${POSTGRES_USER:-structure_guard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-structure_guard_dev}
+
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+
+    volumes:
+      - structure_guard_pgdata:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-structure_guard}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - structure-guard-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: structure-guard-api
+    restart: unless-stopped
+    
+    depends_on:
+      postgis:
+        condition: service_healthy
+
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg2://structure_guard:structure_guard_dev@postgis:5432/structure_guard}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgis}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_USER: ${POSTGRES_USER:-structure_guard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-structure_guard_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-structure_guard}
+      API_HOST: ${API_HOST:-0.0.0.0}
+      API_PORT: ${API_PORT:-8000}
+      API_ENVIRONMENT: ${API_ENVIRONMENT:-development}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:5173,http://localhost:8080}
+      ML_MODEL_PATH: ${ML_MODEL_PATH:-app/ml/models/risk_model.joblib}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+    ports:
+      - "${API_PORT:-8000}:8000"
+
+    volumes:
+      - ./app:/app/app
+      - ./scripts:/app/scripts
+
+    networks:
+      - structure-guard-network
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  structure_guard_pgdata:
+
+networks:
+  structure-guard-network:
+    driver: bridge

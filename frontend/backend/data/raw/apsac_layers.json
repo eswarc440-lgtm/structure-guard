@@ -1,0 +1,146 @@
+{
+  "source": "APSAC",
+  "base_wms": "https://apsac.ap.gov.in/geoserver",
+  "layers": [
+    {
+      "category": "transport",
+      "name": "airports",
+      "workspace": "Andhra-Airports"
+    },
+    {
+      "category": "transport",
+      "name": "railways",
+      "workspace": "Andhra-RailwayNetwork"
+    },
+    {
+      "category": "transport",
+      "name": "railway_stations",
+      "workspace": "Andhra-RailwayStationLocations"
+    },
+    {
+      "category": "transport",
+      "name": "roads",
+      "workspace": "Andhra-RoadNetwork"
+    },
+    {
+      "category": "transport",
+      "name": "national_highways",
+      "workspace": "Andhra-NationalHighway"
+    },
+    {
+      "category": "transport",
+      "name": "state_highways",
+      "workspace": "Andhra-StateHighway"
+    },
+    {
+      "category": "transport",
+      "name": "ports",
+      "workspace": "Andhra-Seaports"
+    },
+    {
+      "category": "water",
+      "name": "rivers",
+      "workspace": "Andhra-River"
+    },
+    {
+      "category": "water",
+      "name": "major_rivers",
+      "workspace": "Andhra-MajorRiver"
+    },
+    {
+      "category": "water",
+      "name": "reservoirs",
+      "workspace": "Andhra-Reservoirs"
+    },
+    {
+      "category": "water",
+      "name": "tanks",
+      "workspace": "Andhra-Tank"
+    },
+    {
+      "category": "water",
+      "name": "inland_waterways",
+      "workspace": "Andhra-InlandWaterways"
+    },
+    {
+      "category": "power",
+      "name": "power_generation",
+      "workspace": "Andhra-PowerGenerationLocations"
+    },
+    {
+      "category": "health",
+      "name": "government_hospitals",
+      "workspace": "Andhra-GovernmentGeneralHospital"
+    },
+    {
+      "category": "health",
+      "name": "primary_health_centers",
+      "workspace": "Andhra-PrimaryHealthCenters"
+    },
+    {
+      "category": "education",
+      "name": "schools",
+      "workspace": "Andhra-SchoolLocations"
+    },
+    {
+      "category": "education",
+      "name": "engineering_colleges",
+      "workspace": "Andhra-EngineeringColleges"
+    },
+    {
+      "category": "education",
+      "name": "universities",
+      "workspace": "Andhra-Universities"
+    },
+    {
+      "category": "emergency",
+      "name": "police_stations",
+      "workspace": "Andhra-PoliceStations"
+    },
+    {
+      "category": "emergency",
+      "name": "cyclone_shelters",
+      "workspace": "Andhra-CycloneShelters"
+    },
+    {
+      "category": "weather",
+      "name": "rain_gauges",
+      "workspace": "Andhra-AutomaticRainGauges"
+    },
+    {
+      "category": "weather",
+      "name": "weather_stations",
+      "workspace": "Andhra-AutomaticWeatherStations"
+    },
+    {
+      "category": "weather",
+      "name": "river_level_recorders",
+      "workspace": "Andhra-RiverWaterLevelRecorders"
+    },
+    {
+      "category": "environment",
+      "name": "ecology",
+      "workspace": "Andhra-Ecology"
+    },
+    {
+      "category": "environment",
+      "name": "wildlife",
+      "workspace": "Andhra-Wildlife"
+    },
+    {
+      "category": "administrative",
+      "name": "districts",
+      "workspace": "Andhra-DistrictBnd"
+    },
+    {
+      "category": "administrative",
+      "name": "mandals",
+      "workspace": "Andhra-MandalBnd"
+    },
+    {
+      "category": "administrative",
+      "name": "villages",
+      "workspace": "Andhra-VillageBnd"
+    }
+  ]
+}
