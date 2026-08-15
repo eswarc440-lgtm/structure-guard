@@ -1,14 +1,20 @@
 import type { AuthUser } from "@/types";
-import { mockRequest } from "./api";
 
 const STORAGE_KEY = "simras.session";
 
-const demoUser: AuthUser = {
-  name: "R. Prasad",
-  email: "r.prasad@infra.gov.in",
-  phone: "+91 98490 00000",
-  organization: "State Infrastructure Authority",
-  role: "Infrastructure Officer",
+const defaultUser = (email = "operator@simras.local"): AuthUser => {
+  const normalized = (email || defaultUser().email)
+    .split("@")[0]
+    .replace(/[._-]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+  return {
+    name: normalized || "SIMRAS Operator",
+    email: email || "operator@simras.local",
+    phone: "+91 98765 43210",
+    organization: "State Infrastructure Authority",
+    role: "Infrastructure Officer",
+  };
 };
 
 export const authService = {
@@ -23,19 +29,22 @@ export const authService = {
     }
   },
   async login(email: string): Promise<AuthUser> {
-    const user: AuthUser = { ...demoUser, email: email || demoUser.email };
-    await mockRequest(null, 500);
+    const user = defaultUser(email || "operator@simras.local");
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     return user;
   },
   async register(payload: { name: string; email: string; phone: string }): Promise<AuthUser> {
-    const user: AuthUser = { ...demoUser, ...payload };
-    await mockRequest(null, 600);
+    const user: AuthUser = {
+      name: payload.name || "SIMRAS Operator",
+      email: payload.email || "operator@simras.local",
+      phone: payload.phone || "+91 98765 43210",
+      organization: "State Infrastructure Authority",
+      role: "Infrastructure Officer",
+    };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     return user;
   },
   async verifyOtp(code: string): Promise<boolean> {
-    await mockRequest(null, 400);
     return code.length === 6;
   },
   logout() {

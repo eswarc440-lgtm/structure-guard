@@ -11,14 +11,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/layouts/DashboardLayout";
 import { ChartCard, PageHeader } from "@/components/common/PageHeader";
 import { AITabs } from "@/components/ai/AITabs";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { healthTrend, regionalAnalysis } from "@/data/analyticsData";
-import { assetTypeSummary } from "@/data/infrastructureData";
+import { apiRequest } from "@/services/api";
 
 const tooltipStyle = {
   background: "var(--color-card)",
@@ -36,6 +36,49 @@ const filters = [
 ];
 
 export function AnalyticsPage() {
+  const [healthTrend, setHealthTrend] = useState<any[]>([]);
+  const [regionalAnalysis, setRegionalAnalysis] = useState<any[]>([]);
+  const [assetTypeSummary, setAssetTypeSummary] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [trendRes, regRes, majorInfraRes] = await Promise.all([
+          apiRequest<any[]>("/api/v1/analytics/health-trend"),
+          apiRequest<any[]>("/api/v1/analytics/regional-analysis"),
+          apiRequest<{ total: number; data: any[] }>("/api/v1/major-infrastructure?limit=200"),
+        ]);
+        
+        setHealthTrend(trendRes);
+        setRegionalAnalysis(regRes);
+        
+        // Generate asset type summary from the infrastructure data
+        const typeMap: Record<string, any> = {};
+        majorInfraRes.data.forEach((asset: any) => {
+          const type = asset.asset_type || "Other";
+          if (!typeMap[type]) {
+            typeMap[type] = { type, healthy: 0, warning: 0, critical: 0 };
+          }
+          if (asset.health_score && asset.health_score >= 80) {
+            typeMap[type].healthy++;
+          } else if (asset.health_score && asset.health_score >= 50) {
+            typeMap[type].warning++;
+          } else {
+            typeMap[type].critical++;
+          }
+        });
+        
+        setAssetTypeSummary(Object.values(typeMap));
+      } catch (err) {
+        console.error("Failed to load analytics data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">

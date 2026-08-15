@@ -1,7 +1,10 @@
 /**
- * OpenStreetMap Nominatim Service
+ * OpenStreetMap Geocoding Service via Backend Proxy
  * Fetch real infrastructure names from coordinates using OSM Reverse Geocoding
+ * Backend acts as CORS-friendly proxy to Nominatim API
  */
+
+import { apiRequest } from "./api";
 
 const nameCache = new Map<string, string>();
 
@@ -16,28 +19,17 @@ export async function getRealAssetName(
       return nameCache.get(cacheKey)!;
     }
 
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
-      {
-        headers: { "User-Agent": "StructureGuard/1.0" },
-      }
+    // Call backend geocoding endpoint (CORS-friendly)
+    const response = await apiRequest<{ name: string | null; cached: boolean }>(
+      `/api/v1/geocoding/reverse?latitude=${latitude}&longitude=${longitude}`
     );
 
-    if (!response.ok) return null;
-
-    const data = await response.json();
-    const name =
-      data.name ||
-      data.address?.name ||
-      data.address?.amenity ||
-      data.address?.building ||
-      null;
-
-    if (name) {
-      nameCache.set(cacheKey, name);
+    if (response.name) {
+      nameCache.set(cacheKey, response.name);
+      return response.name;
     }
 
-    return name;
+    return null;
   } catch (error) {
     console.error("OSM lookup failed:", error);
     return null;
@@ -47,3 +39,4 @@ export async function getRealAssetName(
 export function clearOSMCache(): void {
   nameCache.clear();
 }
+

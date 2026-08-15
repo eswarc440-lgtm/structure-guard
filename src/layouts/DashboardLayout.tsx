@@ -41,7 +41,9 @@ export const topNav: NavItem[] = [
     to: "/infrastructure",
     label: "Infrastructure",
     children: [
-      { to: "/infrastructure", label: "Infrastructure Assets", icon: Building2 },
+      { to: "/infrastructure", label: "Assets", icon: Building2 },
+      { to: "/infrastructure/inspections", label: "Inspections", icon: Activity },
+      { to: "/infrastructure/maintenance", label: "Maintenance", icon: ShieldAlert },
       { to: "/digital-twin", label: "Digital Twin", icon: Box },
       { to: "/gis", label: "GIS", icon: Map },
     ],

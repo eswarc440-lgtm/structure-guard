@@ -48,7 +48,11 @@ export default function GISMap({
     Object.values(markersRef.current).forEach((m) => m.remove());
     markersRef.current = {};
 
-    assets.forEach((a) => {
+    const validAssets = assets.filter((a) => Number.isFinite(a.lat) && Number.isFinite(a.lng));
+    if (validAssets.length === 0) return;
+
+    const bounds = L.latLngBounds([]);
+    validAssets.forEach((a) => {
       const marker = L.circleMarker([a.lat, a.lng], {
         radius: a.id === selectedId ? 11 : 8,
         color: colorFor[a.health],
@@ -60,7 +64,12 @@ export default function GISMap({
         .bindTooltip(`${a.id} · ${a.name}`, { direction: "top" });
       marker.on("click", () => onSelect?.(a));
       markersRef.current[a.id] = marker;
+      bounds.extend([a.lat, a.lng]);
     });
+
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [24, 24], maxZoom: 12 });
+    }
   }, [assets, selectedId, onSelect]);
 
   return <div ref={containerRef} className="size-full" role="application" aria-label="Infrastructure map" />;

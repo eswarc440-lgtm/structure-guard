@@ -1,7 +1,8 @@
+import { useEffect, useState } from "react";
 import { AlertTriangle, Bell, Info } from "lucide-react";
 import { DashboardLayout } from "@/layouts/DashboardLayout";
 import { PageHeader } from "@/components/common/PageHeader";
-import { notifications } from "@/data/analyticsData";
+import { apiRequest } from "@/services/api";
 
 const severityMap = {
   critical: { icon: AlertTriangle, cls: "border-danger/30 bg-danger/10 text-danger", label: "Critical" },
@@ -10,6 +11,24 @@ const severityMap = {
 } as const;
 
 export function NotificationsPage() {
+  const [notifications, setNotifications] = useState<Array<{ id: string; title: string; body: string; severity: "critical" | "warning" | "info"; time: string; read: boolean }>>([]);
+
+  useEffect(() => {
+    apiRequest<Array<{ id: string; name: string; district: string; risk_score: number; health_score: number }>>('/api/v1/analytics/high-risk')
+      .then((items) => {
+        const next = (items ?? []).slice(0, 8).map((item, index) => ({
+          id: item.id || `risk-${index}`,
+          title: `${item.name || 'High-risk asset'} requires review`,
+          body: `${item.name || 'Asset'} in ${item.district || 'AP'} has a ${Number(item.risk_score || 0).toFixed(1)} risk score and ${Number(item.health_score || 0).toFixed(0)} health score.`,
+          severity: Number(item.risk_score || 0) >= 80 ? 'critical' : 'warning',
+          time: 'Live',
+          read: false,
+        }));
+        setNotifications(next);
+      })
+      .catch((error) => console.error('Notifications fetch failed', error));
+  }, []);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -20,7 +39,9 @@ export function NotificationsPage() {
         />
 
         <ul className="space-y-3">
-          {notifications.map((n) => {
+          {notifications.length === 0 ? (
+            <li className="rounded-lg border bg-card p-4 text-sm text-muted-foreground">No live alerts are currently available.</li>
+          ) : notifications.map((n) => {
             const sev = severityMap[n.severity];
             const Icon = sev.icon;
             return (

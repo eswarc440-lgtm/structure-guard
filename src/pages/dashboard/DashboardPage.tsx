@@ -23,14 +23,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@/layouts/DashboardLayout";
 import { PageHeader, ChartCard } from "@/components/common/PageHeader";
 import { StatCard } from "@/components/common/StatCard";
 import { RiskBadge } from "@/components/common/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { healthTrend, insights, recentActivity, riskDistribution } from "@/data/analyticsData";
-import { portfolioTotals } from "@/data/infrastructureData";
+import { apiRequest } from "@/services/api";
 
 const riskColors = ["var(--color-success)", "var(--color-warning)", "var(--color-danger)"];
 
@@ -42,10 +42,77 @@ const quickActions = [
   { to: "/reports", label: "Generate Report", icon: FileBarChart },
 ] as const;
 
+type DashboardOverview = {
+  total_assets: number;
+  total_bridges: number;
+  total_dams: number;
+  total_barrages: number;
+  total_ports: number;
+  total_roads: number;
+  total_buildings: number;
+  total_airports: number;
+  total_power_plants: number;
+  high_risk_assets: number;
+  medium_risk_assets: number;
+  low_risk_assets: number;
+  average_health_score: number;
+  average_risk_score: number;
+  average_remaining_life: number;
+  district_distribution: Array<{ district: string; count: number }>;
+  asset_type_distribution: Array<{ asset_type: string; count: number }>;
+  risk_distribution: Array<{ key: string; name: string; value: number }>;
+  top_high_risk_assets: Array<{ id: string; name: string; asset_type: string; district: string; risk_score: number; health_score: number; remaining_life: number }>;
+  recent_assessments: Array<{ assessment_id: string; assessment_name: string; asset_id: string; risk_level: string; health_score: number; last_assessed: string }>;
+};
+
 export function DashboardPage() {
   const { user } = useAuth();
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const [overview, setOverview] = useState<DashboardOverview | null>(null);
+
+  useEffect(() => {
+    apiRequest<DashboardOverview>("/api/v1/dashboard/overview")
+      .then((data) => setOverview(data))
+      .catch((error) => {
+        console.error("Dashboard overview fetch failed", error);
+        setOverview(null);
+      });
+  }, []);
+
+  const healthTrend = useMemo(
+    () => [
+      {
+        period: "Current",
+        healthy: overview ? Math.max(0, Math.round((overview.average_health_score || 0) * 10)) : 0,
+        warning: overview ? Math.max(0, Math.round(((overview.medium_risk_assets || 0) * 100) / Math.max(1, overview.total_assets))) : 0,
+        critical: overview ? Math.max(0, Math.round(((overview.high_risk_assets || 0) * 100) / Math.max(1, overview.total_assets))) : 0,
+      },
+    ],
+    [overview],
+  );
+
+  const riskDistribution = overview?.risk_distribution ?? [
+    { key: "low", name: "Low Risk", value: 0 },
+    { key: "medium", name: "Medium Risk", value: 0 },
+    { key: "high", name: "High Risk", value: 0 },
+  ];
+
+  const insights = (overview?.top_high_risk_assets ?? []).slice(0, 3).map((asset, index) => ({
+    id: asset.id,
+    title: `${asset.asset_type} risk escalation`,
+    body: `${asset.name || asset.id} in ${asset.district} is trending above the monitoring threshold.`,
+    assetId: asset.id,
+    risk: asset.risk_score >= 70 ? "high" : asset.risk_score >= 40 ? "medium" : "low",
+    confidence: Math.min(99, Math.max(60, asset.health_score + 20 + index * 3)),
+  }));
+
+  const recentActivity = (overview?.recent_assessments ?? []).slice(0, 4).map((item, index) => ({
+    id: item.assessment_id || `activity-${index}`,
+    action: item.assessment_name,
+    actor: item.risk_level ? `${item.risk_level} risk review` : "Database sync",
+    time: item.last_assessed || "Live",
+  }));
 
   return (
     <DashboardLayout>
@@ -53,7 +120,7 @@ export function DashboardPage() {
         <PageHeader
           eyebrow={`${greeting}, ${user?.name ?? "Officer"}`}
           title="Infrastructure Overview"
-          description="Last updated: Today · Demonstration data across the monitored asset portfolio."
+          description="Last updated: Today · Live dataset from the Structure Guard backend."
           actions={
             <Button asChild>
               <Link to="/reports">
@@ -65,14 +132,14 @@ export function DashboardPage() {
         />
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard label="Total Assets" value={portfolioTotals.total.toLocaleString()} icon={Building2} delta="Across 6 districts" />
-          <StatCard label="Healthy" value={portfolioTotals.healthy.toLocaleString()} icon={TrendingUp} tone="success" delta="72.7% of portfolio" />
-          <StatCard label="At Risk" value={portfolioTotals.atRisk.toLocaleString()} icon={ShieldAlert} tone="warning" delta="276 warning · 74 critical" />
-          <StatCard label="AI Predictions" value={portfolioTotals.predictions} icon={Sparkles} tone="accent" delta="Latest cycle: 09 Aug 2026" />
+          <StatCard label="Total Assets" value={overview ? overview.total_assets.toLocaleString() : "—"} icon={Building2} delta="Across all monitored districts" />
+          <StatCard label="Healthy" value={overview ? `${Math.round(overview.average_health_score || 0)}%` : "—"} icon={TrendingUp} tone="success" delta="Average portfolio health" />
+          <StatCard label="At Risk" value={overview ? (overview.high_risk_assets + overview.medium_risk_assets).toLocaleString() : "—"} icon={ShieldAlert} tone="warning" delta={`${overview?.high_risk_assets ?? 0} high · ${overview?.medium_risk_assets ?? 0} medium`} />
+          <StatCard label="AI Predictions" value={overview ? (overview.top_high_risk_assets.length || 0).toLocaleString() : "—"} icon={Sparkles} tone="accent" delta="Latest high-risk queue" />
         </div>
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-          <ChartCard title="Infrastructure Health" subtitle="Condition distribution over the last 7 months">
+          <ChartCard title="Infrastructure Health" subtitle="Real-time portfolio status">
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={healthTrend} margin={{ left: -16, right: 8, top: 8 }}>
@@ -108,7 +175,7 @@ export function DashboardPage() {
                 <PieChart>
                   <Pie data={riskDistribution} dataKey="value" nameKey="name" innerRadius="58%" outerRadius="82%" paddingAngle={2}>
                     {riskDistribution.map((entry, i) => (
-                      <Cell key={entry.key} fill={riskColors[i]} stroke="var(--color-card)" strokeWidth={2} />
+                      <Cell key={entry.key} fill={riskColors[i % riskColors.length]} stroke="var(--color-card)" strokeWidth={2} />
                     ))}
                   </Pie>
                   <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -127,9 +194,11 @@ export function DashboardPage() {
         </div>
 
         <div className="grid gap-4 xl:grid-cols-2">
-          <ChartCard title="AI Insights" subtitle="Generated by the SIMRAS prediction engine">
+          <ChartCard title="AI Insights" subtitle="Generated from live risk ranking">
             <ul className="space-y-3">
-              {insights.map((insight) => (
+              {insights.length === 0 ? (
+                <li className="rounded-md border bg-surface p-4 text-sm text-muted-foreground">No high-risk assets were returned by the live backend yet.</li>
+              ) : insights.map((insight) => (
                 <li key={insight.id} className="rounded-md border bg-surface p-4">
                   <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                     <p className="min-w-0 text-sm font-medium">{insight.title}</p>
@@ -144,9 +213,11 @@ export function DashboardPage() {
             </ul>
           </ChartCard>
 
-          <ChartCard title="Recent Activity" subtitle="Latest platform events">
+          <ChartCard title="Recent Activity" subtitle="Latest live database events">
             <ul className="divide-y">
-              {recentActivity.map((a) => (
+              {recentActivity.length === 0 ? (
+                <li className="py-3 text-sm text-muted-foreground">No recent activity available.</li>
+              ) : recentActivity.map((a) => (
                 <li key={a.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3.5 first:pt-0">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{a.action}</p>

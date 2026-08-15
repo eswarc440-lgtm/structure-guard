@@ -2,6 +2,7 @@
 fastapi==0.141.1
 uvicorn==0.52.1
 starlette==1.4.1
+python-multipart==0.0.6
 
 # Data Validation
 pydantic==2.13.4
@@ -31,6 +32,11 @@ python-dotenv==1.0.0
 # Async Support
 anyio==4.14.2
 greenlet==3.5.5
+
+# Report Generation
+openpyxl==3.11.4
+reportlab==4.2.5
+pypdf==4.2.1
 
 # Utilities
 click==8.4.2

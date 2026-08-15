@@ -1,8 +1,7 @@
-import { mockRequest } from "./api";
-import { notifications, reports } from "@/data/analyticsData";
+import { apiRequest } from "./api";
 
 export const reportService = {
-  list: () => mockRequest(reports),
-  get: (id: string) => mockRequest(reports.find((r) => r.id === id)),
-  notifications: () => mockRequest(notifications),
+  list: () => apiRequest<unknown>("/api/v1/assessments?limit=50"),
+  get: (id: string) => apiRequest<unknown>(`/api/v1/assessments/${encodeURIComponent(id)}`),
+  notifications: () => apiRequest<unknown>("/api/v1/analytics/high-risk"),
 };

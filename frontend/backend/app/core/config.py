@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     api_environment: str = "development"
     
     # CORS
-    cors_origins: str = "http://localhost:3000,http://localhost:5173,http://localhost:8080"
+    cors_origins: str = "http://localhost:3000,http://localhost:5173,http://localhost:8080,http://localhost:8081,http://localhost:8082,http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:8081,http://127.0.0.1:8082"
     
     # ML Model
     ml_model_path: str = "app/ml/models/risk_model.joblib"

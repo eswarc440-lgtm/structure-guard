@@ -18,8 +18,12 @@ export function LoginPage() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
-    await login(email);
-    navigate({ to: "/home" });
+    try {
+      await login(email);
+      navigate({ to: "/home" });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

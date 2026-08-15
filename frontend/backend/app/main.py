@@ -1,14 +1,31 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+from sqlalchemy import text
 
 from app.api import infrastructure
 from app.api import analytics
 from app.api import prediction
 from app.api import major_infrastructure
 from app.api import digital_twin
+from app.api import dashboard
+from app.api import assessments
+from app.api import geocoding
+from app.api import inspections
+from app.api import maintenance
+from app.api import images
+from app.api import gis
+from app.api import risk
+from app.api import reports
 from app.core.config import get_settings
 from app.database.database import engine, Base
+
+# Import all models to register them with Base
+from app.models.infrastructure import InfrastructureAsset
+from app.models.inspections import Inspection, InspectionFinding
+from app.models.maintenance import Maintenance, MaintenanceActivity
+from app.models.images import InspectionImage
+from app.models.gis_and_analytics import District, Mandal, Village, GISLayer, RiskAssessment, MLModel, ModelPrediction
 
 # Configure logging
 logging.basicConfig(
@@ -20,8 +37,11 @@ logger = logging.getLogger(__name__)
 # Get settings
 settings = get_settings()
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+# Create tables if the database is available; allow app import in local/dev environments
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as exc:
+    logger.warning(f"Database schema creation skipped during startup: {exc}")
 
 app = FastAPI(
     title="Structure Guard API",
@@ -46,7 +66,7 @@ def health_check():
     try:
         from app.database.database import SessionLocal
         db = SessionLocal()
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         db.close()
         logger.info("Health check passed - database connection OK")
         return {
@@ -85,6 +105,12 @@ app.include_router(
 )
 
 app.include_router(
+    dashboard.router,
+    prefix="/api/v1",
+    tags=["Dashboard"],
+)
+
+app.include_router(
     major_infrastructure.router,
     prefix="/api/v1",
     tags=["Major Infrastructure"],
@@ -98,12 +124,58 @@ app.include_router(
 
 app.include_router(
     analytics.router,
-    prefix="/analytics",
+    prefix="/api/v1/analytics",
     tags=["Analytics"],
 )
 
 app.include_router(
+    assessments.router,
+    tags=["Assessments"],
+)
+
+app.include_router(
     digital_twin.router,
-    prefix="/api",
+    prefix="/api/v1",
     tags=["Digital Twin"],
+)
+
+app.include_router(
+    geocoding.router,
+    prefix="/api/v1/geocoding",
+    tags=["Geocoding"],
+)
+
+app.include_router(
+    inspections.router,
+    prefix="/api/v1",
+    tags=["Inspections"],
+)
+
+app.include_router(
+    maintenance.router,
+    prefix="/api/v1",
+    tags=["Maintenance"],
+)
+
+app.include_router(
+    images.router,
+    prefix="/api/v1",
+    tags=["Images"],
+)
+
+app.include_router(
+    gis.router,
+    prefix="/api/v1",
+    tags=["GIS"],
+)
+
+app.include_router(
+    risk.router,
+    prefix="/api/v1",
+    tags=["Risk"],
+)
+
+app.include_router(
+    reports.router,
+    tags=["Reports"],
 )

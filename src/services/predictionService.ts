@@ -1,9 +1,8 @@
-import { mockRequest } from "./api";
-import { insights, modelEvaluation, models, predictions } from "@/data/analyticsData";
+import { apiRequest } from "./api";
 
 export const predictionService = {
-  list: () => mockRequest(predictions),
-  insights: () => mockRequest(insights),
-  models: () => mockRequest(models),
-  evaluation: () => mockRequest(modelEvaluation),
+  list: () => apiRequest<unknown>("/api/v1/assessments?limit=20"),
+  insights: () => apiRequest<unknown>("/api/v1/analytics/summary"),
+  models: () => apiRequest<unknown>("/api/v1/dashboard/overview"),
+  evaluation: () => apiRequest<unknown>("/api/v1/analytics/high-risk"),
 };

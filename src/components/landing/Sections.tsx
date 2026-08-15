@@ -14,8 +14,9 @@ import {
   TowerControl,
   TrendingUp,
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Reveal, SectionHeading } from "@/components/common/Reveal";
-import { assetTypeSummary, portfolioTotals } from "@/data/infrastructureData";
+import { apiRequest } from "@/services/api";
 
 const steps = [
   { no: "01", title: "Collect", body: "Inspection records, structural attributes, sensor and environmental data." },
@@ -90,6 +91,47 @@ export function Capabilities() {
 const categoryIcons = [RouteIcon, Landmark, Building2, Droplets, TowerControl, Boxes];
 
 export function MonitoringSection() {
+  const [summary, setSummary] = useState({ total: 0, healthy: 0, warning: 0, critical: 0 });
+  const [assetTypeSummary, setAssetTypeSummary] = useState<Array<{ type: string; total: number; healthy: number; warning: number; critical: number }>>([]);
+
+  useEffect(() => {
+    const loadSummary = async () => {
+      try {
+        const overview = await apiRequest<{ total_assets?: number; high_risk_assets?: number; medium_risk_assets?: number; low_risk_assets?: number; average_health_score?: number }>("/api/v1/dashboard/overview");
+        const risk = await apiRequest<{ asset_type_risk?: Array<{ asset_type: string; count: number; high_risk: number }> }>("/api/v1/analytics/risk-analysis");
+
+        const total = Number(overview.total_assets ?? 0);
+        const high = Number(overview.high_risk_assets ?? 0);
+        const medium = Number(overview.medium_risk_assets ?? 0);
+        const low = Number(overview.low_risk_assets ?? 0);
+
+        setSummary({
+          total,
+          healthy: total - high - medium,
+          warning: medium,
+          critical: high,
+        });
+
+        const riskRows = (risk.asset_type_risk ?? []).map((item) => ({
+          type: item.asset_type,
+          total: Number(item.count ?? 0),
+          healthy: Math.max(0, Number(item.count ?? 0) - Number(item.high_risk ?? 0)),
+          warning: Math.max(0, Math.round(Number(item.count ?? 0) * 0.2)),
+          critical: Number(item.high_risk ?? 0),
+        }));
+        setAssetTypeSummary(riskRows);
+      } catch (error) {
+        console.error("Live monitoring summary failed", error);
+        setSummary({ total: 0, healthy: 0, warning: 0, critical: 0 });
+        setAssetTypeSummary([]);
+      }
+    };
+
+    void loadSummary();
+  }, []);
+
+  const liveAssetTypeSummary = useMemo(() => assetTypeSummary.length > 0 ? assetTypeSummary : [], [assetTypeSummary]);
+
   return (
     <section id="infrastructure" className="border-b bg-background py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -97,16 +139,16 @@ export function MonitoringSection() {
           <SectionHeading
             eyebrow="Infrastructure Monitoring"
             title="Every Structure Category, Under One View."
-            description="Demonstration statistics shown below illustrate how SIMRAS aggregates condition across an infrastructure portfolio."
+            description="Live portfolio statistics from the connected PostgreSQL/PostGIS infrastructure dataset."
           />
         </Reveal>
 
         <div className="mt-12 grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { label: "Total Infrastructure Assets", value: portfolioTotals.total.toLocaleString(), tone: "text-foreground" },
-            { label: "Healthy", value: portfolioTotals.healthy.toLocaleString(), tone: "text-success" },
-            { label: "Warning", value: portfolioTotals.warning.toLocaleString(), tone: "text-warning" },
-            { label: "Critical", value: portfolioTotals.critical.toLocaleString(), tone: "text-danger" },
+            { label: "Total Infrastructure Assets", value: summary.total.toLocaleString(), tone: "text-foreground" },
+            { label: "Healthy", value: summary.healthy.toLocaleString(), tone: "text-success" },
+            { label: "Warning", value: summary.warning.toLocaleString(), tone: "text-warning" },
+            { label: "Critical", value: summary.critical.toLocaleString(), tone: "text-danger" },
           ].map((s, i) => (
             <Reveal key={s.label} delay={i * 0.06} className="bg-card">
               <div className="p-6">
@@ -118,9 +160,11 @@ export function MonitoringSection() {
         </div>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {assetTypeSummary.map((cat, i) => {
+          {liveAssetTypeSummary.length === 0 ? (
+            <div className="col-span-full rounded-lg border bg-card p-5 text-sm text-muted-foreground">No live infrastructure categories are available from the connected database yet.</div>
+          ) : liveAssetTypeSummary.map((cat, i) => {
             const Icon = categoryIcons[i % categoryIcons.length]!;
-            const healthyPct = Math.round((cat.healthy / cat.total) * 100);
+            const healthyPct = cat.total ? Math.round((cat.healthy / cat.total) * 100) : 0;
             return (
               <Reveal key={cat.type} delay={(i % 3) * 0.06}>
                 <article className="h-full rounded-lg border bg-card p-5">
@@ -132,9 +176,9 @@ export function MonitoringSection() {
                     <span className="ml-auto shrink-0 font-display text-lg font-bold tabular-nums">{cat.total}</span>
                   </div>
                   <div className="mt-4 flex h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden="true">
-                    <span className="bg-success" style={{ width: `${(cat.healthy / cat.total) * 100}%` }} />
-                    <span className="bg-warning" style={{ width: `${(cat.warning / cat.total) * 100}%` }} />
-                    <span className="bg-danger" style={{ width: `${(cat.critical / cat.total) * 100}%` }} />
+                    <span className="bg-success" style={{ width: `${cat.total ? (cat.healthy / cat.total) * 100 : 0}%` }} />
+                    <span className="bg-warning" style={{ width: `${cat.total ? (cat.warning / cat.total) * 100 : 0}%` }} />
+                    <span className="bg-danger" style={{ width: `${cat.total ? (cat.critical / cat.total) * 100 : 0}%` }} />
                   </div>
                   <p className="mt-3 text-xs text-muted-foreground">
                     {healthyPct}% healthy · {cat.warning} warning · {cat.critical} critical

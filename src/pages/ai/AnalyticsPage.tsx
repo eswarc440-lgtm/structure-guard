@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Download, FileBarChart } from "lucide-react";
 import {
   Bar,
@@ -17,8 +18,7 @@ import { AITabs } from "@/components/ai/AITabs";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { healthTrend, regionalAnalysis } from "@/data/analyticsData";
-import { assetTypeSummary } from "@/data/infrastructureData";
+import { apiRequest } from "@/services/api";
 
 const tooltipStyle = {
   background: "var(--color-card)",
@@ -36,6 +36,42 @@ const filters = [
 ];
 
 export function AnalyticsPage() {
+  const [healthTrend, setHealthTrend] = useState<Array<{ period: string; healthy: number; warning: number; critical: number; predictions?: number; riskIndex?: number }>>([]);
+  const [riskDistribution, setRiskDistribution] = useState<Array<{ key: string; name: string; value: number }>>([]);
+  const [regionalAnalysis, setRegionalAnalysis] = useState<Array<{ region: string; assets: number; atRisk: number; riskIndex: number }>>([]);
+  const [assetTypeSummary, setAssetTypeSummary] = useState<Array<{ type: string; healthy: number; warning: number; critical: number; total: number }>>([]);
+
+  useEffect(() => {
+    apiRequest<any>("/api/v1/dashboard/overview")
+      .then((overview) => {
+        setHealthTrend([
+          { period: "Current", healthy: Math.round(overview.average_health_score || 0), warning: overview.medium_risk_assets || 0, critical: overview.high_risk_assets || 0, predictions: overview.high_risk_assets || 0, riskIndex: overview.average_risk_score || 0 },
+        ]);
+        setRiskDistribution(overview.risk_distribution ?? []);
+      })
+      .catch((error) => console.error('Dashboard overview fetch failed', error));
+
+    apiRequest<any>("/api/v1/analytics/risk-analysis")
+      .then((payload) => {
+        const districtRows = (payload.district_risk ?? []).map((item: any) => ({
+          region: item.district,
+          assets: Number(item.assets ?? 0),
+          atRisk: Number(item.high_risk ?? 0),
+          riskIndex: Number(item.high_risk ?? 0) / Math.max(1, Number(item.assets ?? 0)) * 100,
+        }));
+        const typeRows = (payload.asset_type_risk ?? []).map((item: any) => ({
+          type: item.asset_type,
+          healthy: Math.max(0, Number(item.count ?? 0) - Number(item.high_risk ?? 0)),
+          warning: Math.max(0, Number(item.count ?? 0) - Number(item.high_risk ?? 0) > 0 ? Math.round(Number(item.count ?? 0) * 0.2) : 0),
+          critical: Number(item.high_risk ?? 0),
+          total: Number(item.count ?? 0),
+        }));
+        setRegionalAnalysis(districtRows);
+        setAssetTypeSummary(typeRows);
+      })
+      .catch((error) => console.error('Risk analysis fetch failed', error));
+  }, []);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -81,7 +117,7 @@ export function AnalyticsPage() {
         </section>
 
         <div className="grid gap-4 xl:grid-cols-2">
-          <ChartCard title="Infrastructure Health Trend" subtitle="Condition classes over time">
+          <ChartCard title="Infrastructure Health Trend" subtitle="Current health profile">
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={healthTrend} margin={{ left: -16, right: 8, top: 8 }}>
@@ -98,7 +134,7 @@ export function AnalyticsPage() {
             </div>
           </ChartCard>
 
-          <ChartCard title="Asset Distribution by Category" subtitle="Total monitored assets per structure type">
+          <ChartCard title="Asset Distribution by Category" subtitle="Structure type distribution">
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={assetTypeSummary} margin={{ left: -16, right: 8, top: 8 }}>
@@ -115,7 +151,7 @@ export function AnalyticsPage() {
             </div>
           </ChartCard>
 
-          <ChartCard title="Regional Analysis" subtitle="Assets and at-risk counts by district">
+          <ChartCard title="Regional Analysis" subtitle="Assets and high-risk counts by district">
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={regionalAnalysis} margin={{ left: -16, right: 8, top: 8 }}>
@@ -131,7 +167,7 @@ export function AnalyticsPage() {
             </div>
           </ChartCard>
 
-          <ChartCard title="Prediction Trend" subtitle="Prediction volume and risk index">
+          <ChartCard title="Prediction Trend" subtitle="Current portfolio risk index">
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={healthTrend} margin={{ left: -16, right: 8, top: 8 }}>

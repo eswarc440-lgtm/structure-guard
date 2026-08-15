@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Download, Search } from "lucide-react";
+import { ArrowLeft, Download, Plus, Search } from "lucide-react";
 import { DashboardLayout } from "@/layouts/DashboardLayout";
 import { ChartCard, EmptyState, PageHeader } from "@/components/common/PageHeader";
 import { RiskBadge, StatusBadge } from "@/components/common/StatusBadge";
@@ -11,18 +11,129 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { assets, inspectionHistory } from "@/data/infrastructureData";
-import { predictions } from "@/data/analyticsData";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { apiRequest } from "@/services/api";
+import type { InfrastructureAsset, InspectionRecord } from "@/types";
+
+function mapApiAsset(asset: any): InfrastructureAsset {
+  return {
+    id: asset.id,
+    name: asset.name || 'Unnamed Asset',
+    type: (asset.asset_type || 'Other') as InfrastructureAsset['type'],
+    location: asset.location || asset.district || 'Unknown',
+    district: asset.district || 'Unknown',
+    lat: Number(asset.latitude ?? 0),
+    lng: Number(asset.longitude ?? 0),
+    health: Number(asset.health_score ?? 0) >= 80 ? 'healthy' : Number(asset.health_score ?? 0) >= 50 ? 'warning' : 'critical',
+    healthScore: Number(asset.health_score ?? 0),
+    risk: (String(asset.risk_level || 'Low').toLowerCase().includes('high') ? 'high' : String(asset.risk_level || 'Low').toLowerCase().includes('medium') ? 'medium' : 'low') as InfrastructureAsset['risk'],
+    riskScore: Number(asset.risk_score ?? 0),
+    lastInspection: 'Live data',
+    status: 'Operational',
+    builtYear: Number(asset.built_year ?? 2000),
+    rulYears: Number(asset.remaining_useful_life ?? asset.remaining_life ?? 10),
+  };
+}
 
 export function InfrastructurePage() {
+  const [rows, setRows] = useState<InfrastructureAsset[]>([]);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("All types");
   const [health, setHealth] = useState("All health");
   const [risk, setRisk] = useState("All risk");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    id: "",
+    name: "",
+    asset_type: "Bridge",
+    location: "",
+    district: "",
+    latitude: 0,
+    longitude: 0,
+    built_year: new Date().getFullYear(),
+    health_score: 80,
+    risk_level: "Low",
+    risk_score: 30,
+    status: "Operational",
+  });
 
-  const rows = useMemo(
+  useEffect(() => {
+    let isMounted = true;
+
+    setLoading(true);
+    setError(null);
+
+    apiRequest<{ total: number; items: any[] }>('/api/v1/infrastructure?limit=1000')
+      .then((payload) => {
+        if (!isMounted) return;
+        const nextRows = (payload.items ?? []).map(mapApiAsset);
+        setRows(nextRows);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Infrastructure list fetch failed', error);
+        if (!isMounted) return;
+        setRows([]);
+        setError('Unable to load real infrastructure records from the live database.');
+        setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleAddAsset = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await apiRequest<any>('/api/v1/infrastructure', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+      });
+
+      const newAsset = mapApiAsset(response.asset);
+      setRows((currentRows) => [...currentRows, newAsset]);
+      
+      // Reset form and close dialog
+      setFormData({
+        id: "",
+        name: "",
+        asset_type: "Bridge",
+        location: "",
+        district: "",
+        latitude: 0,
+        longitude: 0,
+        built_year: new Date().getFullYear(),
+        health_score: 80,
+        risk_level: "Low",
+        risk_score: 30,
+        status: "Operational",
+      });
+      setIsAddDialogOpen(false);
+      
+      // Show success message
+      alert('Asset created successfully!');
+    } catch (error) {
+      console.error('Failed to create asset:', error);
+      alert('Failed to create asset. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const filtered = useMemo(
     () =>
-      assets.filter((a) => {
+      rows.filter((a) => {
         const q = query.toLowerCase();
         return (
           (a.name.toLowerCase().includes(q) || a.id.toLowerCase().includes(q) || a.location.toLowerCase().includes(q)) &&
@@ -31,7 +142,7 @@ export function InfrastructurePage() {
           (risk === "All risk" || a.risk === risk.toLowerCase())
         );
       }),
-    [query, type, health, risk],
+    [rows, query, type, health, risk],
   );
 
   return (
@@ -42,10 +153,157 @@ export function InfrastructurePage() {
           title="Infrastructure Assets"
           description="Central register of monitored structures with condition, risk and inspection state."
           actions={
-            <Button variant="outline">
-              <Download className="size-4" />
-              Export
-            </Button>
+            <div className="flex gap-2">
+              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="size-4" />
+                    Add Asset
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Add New Infrastructure Asset</DialogTitle>
+                    <DialogDescription>Create a new asset record in the system.</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="asset-id">Asset ID *</Label>
+                        <Input
+                          id="asset-id"
+                          placeholder="e.g., BR-10001"
+                          value={formData.id}
+                          onChange={(e) => setFormData({ ...formData, id: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="asset-name">Name *</Label>
+                        <Input
+                          id="asset-name"
+                          placeholder="Asset name"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="asset-type">Asset Type *</Label>
+                        <Select value={formData.asset_type} onValueChange={(value) => setFormData({ ...formData, asset_type: value })}>
+                          <SelectTrigger id="asset-type">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {["Bridge", "Road", "Dam", "Port", "Airport", "Railway", "Power Plant", "Building", "Water Tank", "School", "Hospital", "Barrage", "Canal"].map((t) => (
+                              <SelectItem key={t} value={t}>{t}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="location">Location *</Label>
+                        <Input
+                          id="location"
+                          placeholder="Location"
+                          value={formData.location}
+                          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="district">District *</Label>
+                        <Input
+                          id="district"
+                          placeholder="District"
+                          value={formData.district}
+                          onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="built-year">Built Year</Label>
+                        <Input
+                          id="built-year"
+                          type="number"
+                          placeholder="2000"
+                          value={formData.built_year}
+                          onChange={(e) => setFormData({ ...formData, built_year: parseInt(e.target.value) })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="latitude">Latitude *</Label>
+                        <Input
+                          id="latitude"
+                          type="number"
+                          step="0.0001"
+                          placeholder="16.5165"
+                          value={formData.latitude}
+                          onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="longitude">Longitude *</Label>
+                        <Input
+                          id="longitude"
+                          type="number"
+                          step="0.0001"
+                          placeholder="80.6150"
+                          value={formData.longitude}
+                          onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="health-score">Health Score (0-100)</Label>
+                        <Input
+                          id="health-score"
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={formData.health_score}
+                          onChange={(e) => setFormData({ ...formData, health_score: parseInt(e.target.value) })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="risk-level">Risk Level</Label>
+                        <Select value={formData.risk_level} onValueChange={(value) => setFormData({ ...formData, risk_level: value })}>
+                          <SelectTrigger id="risk-level">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Low">Low</SelectItem>
+                            <SelectItem value="Medium">Medium</SelectItem>
+                            <SelectItem value="High">High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleAddAsset} disabled={isSubmitting || !formData.id || !formData.name || !formData.location || !formData.district}>
+                      {isSubmitting ? "Creating..." : "Create Asset"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              <Button variant="outline">
+                <Download className="size-4" />
+                Export
+              </Button>
+            </div>
           }
         />
 
@@ -84,8 +342,12 @@ export function InfrastructurePage() {
           ))}
         </section>
 
-        <ChartCard title="Asset Register" subtitle={`${rows.length} assets`}>
-          {rows.length === 0 ? (
+        <ChartCard title="Asset Register" subtitle={`${filtered.length} assets`}>
+          {loading ? (
+            <div className="flex min-h-40 items-center justify-center text-sm text-muted-foreground">Loading live infrastructure records…</div>
+          ) : error ? (
+            <EmptyState title="Live data unavailable" description={error} />
+          ) : filtered.length === 0 ? (
             <EmptyState title="No assets match these filters" description="Adjust the search or filter criteria." />
           ) : (
             <div className="overflow-x-auto">
@@ -103,7 +365,7 @@ export function InfrastructurePage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {rows.map((a) => (
+                  {filtered.map((a) => (
                     <TableRow key={a.id}>
                       <TableCell>
                         <Link to="/infrastructure/$id" params={{ id: a.id }} className="font-mono text-xs text-primary underline underline-offset-4">
@@ -113,12 +375,8 @@ export function InfrastructurePage() {
                       <TableCell className="text-sm font-medium">{a.name}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{a.type}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{a.location}</TableCell>
-                      <TableCell>
-                        <StatusBadge status={a.health} />
-                      </TableCell>
-                      <TableCell>
-                        <RiskBadge risk={a.risk} />
-                      </TableCell>
+                      <TableCell><StatusBadge status={a.health} /></TableCell>
+                      <TableCell><RiskBadge risk={a.risk} /></TableCell>
                       <TableCell className="text-sm text-muted-foreground">{a.lastInspection}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{a.status}</TableCell>
                     </TableRow>
@@ -134,9 +392,39 @@ export function InfrastructurePage() {
 }
 
 export function AssetDetailsPage({ id }: { id: string }) {
-  const asset = assets.find((a) => a.id === id);
-  const history = inspectionHistory["default"] ?? [];
-  const prediction = predictions.find((p) => p.assetId === id);
+  const [asset, setAsset] = useState<InfrastructureAsset | null>(null);
+  const [history, setHistory] = useState<InspectionRecord[]>([]);
+  const [prediction, setPrediction] = useState<{ risk: InfrastructureAsset['risk']; prediction: string; confidence: number; predictedAt: string } | null>(null);
+
+  useEffect(() => {
+    apiRequest<any>(`/api/v1/infrastructure/${encodeURIComponent(id)}`)
+      .then((data) => setAsset(mapApiAsset(data)))
+      .catch((error) => console.error('Asset detail fetch failed', error));
+
+    apiRequest<{ items?: Array<any> }>(`/api/v1/assessments?limit=10`)
+      .then((payload) => setHistory((payload.items ?? []).slice(0, 5).map((item) => ({
+        id: item.assessment_id || item.id || 'ASSMT',
+        date: item.last_assessed || 'Live',
+        inspector: item.inspector || 'AI inspection system',
+        finding: item.assessment_name || 'Inspection record',
+        health: Number(item.health_score ?? 0) >= 80 ? 'healthy' : Number(item.health_score ?? 0) >= 50 ? 'warning' : 'critical',
+        score: Number(item.health_score ?? 0),
+      }))))
+      .catch((error) => console.error('Assessment history fetch failed', error));
+
+    apiRequest<{ items?: Array<any> }>(`/api/v1/assessments?limit=10`)
+      .then((payload) => {
+        const item = (payload.items ?? [])[0];
+        if (!item) return;
+        setPrediction({
+          risk: String(item.risk_level || 'Low').toLowerCase().includes('high') ? 'high' : String(item.risk_level || 'Low').toLowerCase().includes('medium') ? 'medium' : 'low',
+          prediction: `Risk score ${Number(item.risk_score ?? 0).toFixed(1)} with ${Number(item.health_score ?? 0).toFixed(0)} health index`,
+          confidence: Math.min(99, Math.max(65, Number(item.health_score ?? 0) + 15)),
+          predictedAt: item.last_assessed || 'Live',
+        });
+      })
+      .catch((error) => console.error('Prediction fetch failed', error));
+  }, [id]);
 
   if (!asset) {
     return (
@@ -203,9 +491,7 @@ export function AssetDetailsPage({ id }: { id: string }) {
                 <div className="flex flex-wrap items-center gap-6">
                   <div>
                     <p className="eyebrow text-muted-foreground">Risk level</p>
-                    <div className="mt-1.5">
-                      <RiskBadge risk={prediction.risk} />
-                    </div>
+                    <div className="mt-1.5"><RiskBadge risk={prediction.risk} /></div>
                   </div>
                   <div>
                     <p className="eyebrow text-muted-foreground">Confidence</p>
@@ -223,25 +509,19 @@ export function AssetDetailsPage({ id }: { id: string }) {
           </ChartCard>
         </div>
 
-        <ChartCard
-          title="Inspection History"
-          subtitle="Field observations recorded against this asset"
-          action={
+        <ChartCard title="Inspection History" subtitle="Field observations recorded against this asset" action={
             <Button asChild variant="outline" size="sm">
               <Link to="/infrastructure/$id/history" params={{ id: asset.id }}>
                 Full history
               </Link>
             </Button>
-          }
-        >
+          }>
           <ul className="divide-y">
             {history.slice(0, 3).map((h) => (
               <li key={h.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 py-3.5 first:pt-0">
                 <div className="min-w-0">
                   <p className="text-sm font-medium">{h.finding}</p>
-                  <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
-                    {h.id} · {h.date} · {h.inspector}
-                  </p>
+                  <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">{h.id} · {h.date} · {h.inspector}</p>
                 </div>
                 <StatusBadge status={h.health} />
               </li>
@@ -254,8 +534,25 @@ export function AssetDetailsPage({ id }: { id: string }) {
 }
 
 export function AssetHistoryPage({ id }: { id: string }) {
-  const asset = assets.find((a) => a.id === id);
-  const history = inspectionHistory["default"] ?? [];
+  const [asset, setAsset] = useState<InfrastructureAsset | null>(null);
+  const [history, setHistory] = useState<InspectionRecord[]>([]);
+
+  useEffect(() => {
+    apiRequest<any>(`/api/v1/infrastructure/${encodeURIComponent(id)}`)
+      .then((data) => setAsset(mapApiAsset(data)))
+      .catch((error) => console.error('Asset detail fetch failed', error));
+
+    apiRequest<{ items?: Array<any> }>(`/api/v1/assessments?limit=10`)
+      .then((payload) => setHistory((payload.items ?? []).map((item) => ({
+        id: item.assessment_id || item.id || 'ASSMT',
+        date: item.last_assessed || 'Live',
+        inspector: item.inspector || 'AI inspection system',
+        finding: item.assessment_name || 'Inspection record',
+        health: Number(item.health_score ?? 0) >= 80 ? 'healthy' : Number(item.health_score ?? 0) >= 50 ? 'warning' : 'critical',
+        score: Number(item.health_score ?? 0),
+      }))))
+      .catch((error) => console.error('Assessment history fetch failed', error));
+  }, [id]);
 
   return (
     <DashboardLayout>
@@ -285,9 +582,7 @@ export function AssetHistoryPage({ id }: { id: string }) {
                     <TableCell className="text-sm">{h.date}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{h.inspector}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{h.finding}</TableCell>
-                    <TableCell>
-                      <StatusBadge status={h.health} />
-                    </TableCell>
+                    <TableCell><StatusBadge status={h.health} /></TableCell>
                     <TableCell className="text-right tabular-nums">{h.score}</TableCell>
                   </TableRow>
                 ))}

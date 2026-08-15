@@ -1,5 +1,4 @@
-import { mockRequest } from "./api";
-import { assets } from "@/data/infrastructureData";
+import { apiRequest } from "./api";
 import type { InfrastructureAsset } from "@/types";
 
 export interface AssetFeature {
@@ -8,15 +7,12 @@ export interface AssetFeature {
   properties: InfrastructureAsset;
 }
 
-/** GeoJSON shape matches the future PostGIS response contract. */
 export const gisService = {
-  featureCollection: () =>
-    mockRequest({
-      type: "FeatureCollection" as const,
-      features: assets.map<AssetFeature>((a) => ({
-        type: "Feature",
-        geometry: { type: "Point", coordinates: [a.lng, a.lat] },
-        properties: a,
-      })),
-    }),
+  featureCollection: (params: Record<string, string | number | undefined> = {}) => {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") query.set(key, String(value));
+    });
+    return apiRequest<{ type: string; features: Array<{ properties: Record<string, unknown> }> }>(`/api/v1/infrastructure/geojson${query.toString() ? `?${query}` : ""}`);
+  },
 };

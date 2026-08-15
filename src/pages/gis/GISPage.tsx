@@ -6,20 +6,76 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RiskBadge, StatusBadge } from "@/components/common/StatusBadge";
-import { assets as allAssets } from "@/data/infrastructureData";
+import { apiRequest } from "@/services/api";
 import type { AssetType, InfrastructureAsset } from "@/types";
 
 const GISMap = lazy(() => import("@/components/gis/GISMap"));
 
 const layerTypes: AssetType[] = ["Bridge", "Road", "Building", "Water", "Utility", "Other"];
 
+function getHealthStatus(score: number | null): InfrastructureAsset["health"] {
+  if (score === null || score === undefined) return "healthy";
+  if (score >= 80) return "healthy";
+  if (score >= 50) return "warning";
+  return "critical";
+}
+
+function getRiskLevel(level: string | null): InfrastructureAsset["risk"] {
+  if (!level) return "low";
+  const risk = level.toLowerCase();
+  if (risk.includes("high") || risk.includes("critical")) return "high";
+  if (risk.includes("medium")) return "medium";
+  return "low";
+}
+
 export function GISPage() {
   const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<AssetType[]>(layerTypes);
-  const [selected, setSelected] = useState<InfrastructureAsset | undefined>(allAssets[0]);
+  const [allAssets, setAllAssets] = useState<InfrastructureAsset[]>([]);
+  const [selected, setSelected] = useState<InfrastructureAsset | undefined>();
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+
+    let isMounted = true;
+    apiRequest<{ total: number; items: Array<any> }>('/api/v1/infrastructure?limit=500')
+      .then((payload) => {
+        const transformedAssets = (payload.items ?? [])
+          .map((asset) => ({
+            id: asset.id,
+            name: asset.name || 'Unnamed Asset',
+            type: (asset.asset_type || 'Other') as AssetType,
+            location: asset.location || asset.district || 'Unknown',
+            district: asset.district || 'Unknown',
+            lat: Number(asset.latitude ?? 0),
+            lng: Number(asset.longitude ?? 0),
+            health: getHealthStatus(Number(asset.health_score ?? 0)),
+            healthScore: Number(asset.health_score ?? 0),
+            risk: getRiskLevel(asset.risk_level),
+            riskScore: Number(asset.risk_score ?? 0),
+            lastInspection: 'Live',
+            status: 'Operational',
+            builtYear: Number(asset.built_year ?? 2000),
+            rulYears: Number(asset.remaining_useful_life ?? asset.remaining_life ?? 10),
+          }))
+          .filter((asset) => Number.isFinite(asset.lat) && Number.isFinite(asset.lng) && asset.lat !== 0 && asset.lng !== 0);
+
+        if (!isMounted) return;
+        setAllAssets(transformedAssets);
+        if (transformedAssets.length > 0) setSelected(transformedAssets[0]);
+      })
+      .catch((error) => {
+        console.warn('GIS assets fetch failed.', error);
+        if (!isMounted) return;
+        setAllAssets([]);
+        setSelected(undefined);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filtered = useMemo(
     () =>
@@ -28,7 +84,7 @@ export function GISPage() {
           active.includes(a.type) &&
           (a.name.toLowerCase().includes(query.toLowerCase()) || a.id.toLowerCase().includes(query.toLowerCase())),
       ),
-    [active, query],
+    [active, query, allAssets],
   );
 
   const toggle = (t: AssetType) =>

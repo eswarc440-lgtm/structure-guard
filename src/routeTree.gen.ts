@@ -29,6 +29,8 @@ import { Route as AuthResetPasswordRouteImport } from './routes/auth.reset-passw
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth.verify-email'
 import { Route as AuthVerifyPhoneRouteImport } from './routes/auth.verify-phone'
 import { Route as InfrastructureIndexRouteImport } from './routes/infrastructure.index'
+import { Route as InfrastructureInspectionsRouteImport } from './routes/infrastructure.inspections'
+import { Route as InfrastructureMaintenanceRouteImport } from './routes/infrastructure.maintenance'
 import { Route as ReportsIndexRouteImport } from './routes/reports.index'
 import { Route as ReportsIdRouteImport } from './routes/reports.$id'
 import { Route as InfrastructureIdIndexRouteImport } from './routes/infrastructure.$id.index'
@@ -134,6 +136,18 @@ const InfrastructureIndexRoute = InfrastructureIndexRouteImport.update({
   path: '/infrastructure/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InfrastructureInspectionsRoute =
+  InfrastructureInspectionsRouteImport.update({
+    id: '/infrastructure/inspections',
+    path: '/infrastructure/inspections',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const InfrastructureMaintenanceRoute =
+  InfrastructureMaintenanceRouteImport.update({
+    id: '/infrastructure/maintenance',
+    path: '/infrastructure/maintenance',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ReportsIndexRoute = ReportsIndexRouteImport.update({
   id: '/reports/',
   path: '/reports/',
@@ -174,6 +188,8 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/auth/verify-phone': typeof AuthVerifyPhoneRoute
+  '/infrastructure/inspections': typeof InfrastructureInspectionsRoute
+  '/infrastructure/maintenance': typeof InfrastructureMaintenanceRoute
   '/reports/$id': typeof ReportsIdRoute
   '/ai/': typeof AiIndexRoute
   '/infrastructure/': typeof InfrastructureIndexRoute
@@ -200,6 +216,8 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/auth/verify-phone': typeof AuthVerifyPhoneRoute
+  '/infrastructure/inspections': typeof InfrastructureInspectionsRoute
+  '/infrastructure/maintenance': typeof InfrastructureMaintenanceRoute
   '/reports/$id': typeof ReportsIdRoute
   '/ai': typeof AiIndexRoute
   '/infrastructure': typeof InfrastructureIndexRoute
@@ -227,6 +245,8 @@ export interface FileRoutesById {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/auth/verify-phone': typeof AuthVerifyPhoneRoute
+  '/infrastructure/inspections': typeof InfrastructureInspectionsRoute
+  '/infrastructure/maintenance': typeof InfrastructureMaintenanceRoute
   '/reports/$id': typeof ReportsIdRoute
   '/ai/': typeof AiIndexRoute
   '/infrastructure/': typeof InfrastructureIndexRoute
@@ -255,6 +275,8 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify-email'
     | '/auth/verify-phone'
+    | '/infrastructure/inspections'
+    | '/infrastructure/maintenance'
     | '/reports/$id'
     | '/ai/'
     | '/infrastructure/'
@@ -281,6 +303,8 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify-email'
     | '/auth/verify-phone'
+    | '/infrastructure/inspections'
+    | '/infrastructure/maintenance'
     | '/reports/$id'
     | '/ai'
     | '/infrastructure'
@@ -307,6 +331,8 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify-email'
     | '/auth/verify-phone'
+    | '/infrastructure/inspections'
+    | '/infrastructure/maintenance'
     | '/reports/$id'
     | '/ai/'
     | '/infrastructure/'
@@ -334,6 +360,8 @@ export interface RootRouteChildren {
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
   AuthVerifyPhoneRoute: typeof AuthVerifyPhoneRoute
+  InfrastructureInspectionsRoute: typeof InfrastructureInspectionsRoute
+  InfrastructureMaintenanceRoute: typeof InfrastructureMaintenanceRoute
   ReportsIdRoute: typeof ReportsIdRoute
   AiIndexRoute: typeof AiIndexRoute
   InfrastructureIndexRoute: typeof InfrastructureIndexRoute
@@ -484,6 +512,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InfrastructureIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/infrastructure/inspections': {
+      id: '/infrastructure/inspections'
+      path: '/infrastructure/inspections'
+      fullPath: '/infrastructure/inspections'
+      preLoaderRoute: typeof InfrastructureInspectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/infrastructure/maintenance': {
+      id: '/infrastructure/maintenance'
+      path: '/infrastructure/maintenance'
+      fullPath: '/infrastructure/maintenance'
+      preLoaderRoute: typeof InfrastructureMaintenanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reports/': {
       id: '/reports/'
       path: '/reports'
@@ -534,6 +576,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
   AuthVerifyPhoneRoute: AuthVerifyPhoneRoute,
+  InfrastructureInspectionsRoute: InfrastructureInspectionsRoute,
+  InfrastructureMaintenanceRoute: InfrastructureMaintenanceRoute,
   ReportsIdRoute: ReportsIdRoute,
   AiIndexRoute: AiIndexRoute,
   InfrastructureIndexRoute: InfrastructureIndexRoute,

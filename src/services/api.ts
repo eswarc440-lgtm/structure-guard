@@ -1,20 +1,45 @@
-/**
- * Mock API layer.
- * Replace `mockRequest` with an axios/fetch client pointed at the FastAPI
- * backend. Service signatures stay identical, so no UI changes are required.
- */
-
-export const API_BASE_URL = "/api/v1";
-
-const DEFAULT_LATENCY = 220;
-
-export function mockRequest<T>(data: T, latency = DEFAULT_LATENCY): Promise<T> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(data), latency);
-  });
-}
+export const API_BASE_URL = "http://127.0.0.1:8000";
 
 export interface ApiError {
   status: number;
   message: string;
+}
+
+export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const url = path.startsWith("http") ? path : `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+
+  const response = await fetch(url, {
+    ...init,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      ...(init.headers ?? {}),
+    },
+  });
+
+  if (!response.ok) {
+    let detail = "Request failed";
+    try {
+      const payload = await response.json();
+      detail = payload?.detail ?? payload?.message ?? JSON.stringify(payload);
+    } catch {
+      detail = await response.text();
+    }
+
+    const error: ApiError = {
+      status: response.status,
+      message: detail,
+    };
+
+    throw error;
+  }
+
+  if (response.status === 204) return undefined as T;
+  return (await response.json()) as T;
+}
+
+export function mockRequest<T>(data: T, latency = 0): Promise<T> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(data), latency);
+  });
 }
